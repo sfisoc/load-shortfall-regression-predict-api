@@ -58,7 +58,25 @@ def _preprocess_data(data):
     # ---------------------------------------------------------------
 
     # ----------- Replace this code with your own preprocessing steps --------
-    predict_vector = feature_vector_df[['Madrid_wind_speed','Bilbao_rain_1h','Valencia_wind_speed']]
+    df_test_drop = feature_vector_df.copy()
+    df_test_drop = df_test_drop.drop(['Valencia_pressure'], axis=1)
+
+    df_test_drop["time"] = pd.to_datetime(df_test_drop["time"])
+
+    df_test_drop["shortfall_month"] = df_test_drop["time"].dt.month
+    df_test_drop["shortfall_year"] = df_test_drop["time"].dt.year
+    df_test_drop["shortfall_day"] = df_test_drop["time"].dt.day
+    df_test_drop["shortfall_weekday"] = df_test_drop["time"].dt.weekday
+    df_test_drop["shortfall_hour"] = df_test_drop["time"].dt.hour
+    df_test_drop = df_test_drop.drop(['time'], axis=1)
+
+    df_test_drop["Valencia_wind_deg"] = df_test_drop["Valencia_wind_deg"].str.replace("level_", "")
+    df_test_drop["Seville_pressure"] = df_test_drop["Valencia_wind_deg"].str.replace("sp", "")
+    df_test_drop["Valencia_wind_deg"] = pd.to_numeric(df_test_drop["Valencia_wind_deg"])
+    df_test_drop["Seville_pressure"] = pd.to_numeric(df_test_drop["Seville_pressure"])
+
+    df_test_drop = df_test_drop.reset_index()
+    predict_vector = df_test_drop
     # ------------------------------------------------------------------------
 
     return predict_vector
